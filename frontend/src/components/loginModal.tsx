@@ -1,156 +1,237 @@
 import React, { useState } from "react";
+import { LoginForm, RegistrationForm } from "../api/auth";
 
 type Role = "student" | "teacher";
-type Mode = "login" | "register";
+type Mode = "login" | "register" | "forgot";
 
 export const LoginModal: React.FC = () => {
   const [role, setRole] = useState<Role>("student");
   const [mode, setMode] = useState<Mode>("login");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // New state to toggle between "Enter ID" and "Enter Code"
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+
+  const handleResetRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isCodeSent) {
+      // Logic to trigger the email goes here
+      console.log("Sending code to ID:", name);
+      setIsCodeSent(true);
+    } else {
+      // Logic to verify the 6-digit code goes here
+      console.log("Verifying code:", verificationCode);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-8 font-sans antialiased text-[#1A1A1A]">
-      <div className="w-full max-w-[340px]">
+    <div className="min-h-screen bg-[#F9FAFB] flex flex-col items-center justify-center p-6 font-sans antialiased text-[#111827]">
+      <div className="w-full max-w-[440px] bg-white border border-gray-200 rounded-sm p-10 shadow-sm">
         {/* Header Section */}
-        <div className="mb-10 text-left">
-          <h1 className="text-[32px] font-black tracking-tighter mb-1 uppercase italic leading-none">
-            {mode === "login" ? "Welcome Back" : "Join the Pulse"}
+        <div className="mb-8 text-left">
+          <h1 className="text-[30px] font-bold tracking-tight text-gray-900 leading-tight">
+            {mode === "login" && "Login"}
+            {mode === "register" && "Create an account"}
+            {mode === "forgot" &&
+              (isCodeSent ? "Verify Code" : "Reset Password")}
           </h1>
-          <p className="text-[14px] text-gray-500 font-medium mt-2">
-            {mode === "login"
-              ? "New to the system?"
-              : "Already have an account?"}{" "}
-            <span
-              onClick={() => setMode(mode === "login" ? "register" : "login")}
-              className="font-bold text-black cursor-pointer hover:underline underline-offset-4"
-            >
-              {mode === "login" ? "Register" : "Sign in"}
-            </span>
+          <p className="text-[15px] text-gray-500 mt-2 font-medium">
+            {mode === "login" && "Welcome back! Please enter your details."}
+            {mode === "register" && "Enter your information to get started."}
+            {mode === "forgot" &&
+              (isCodeSent
+                ? "We've sent a 6-digit code to your school email."
+                : "Enter your ID to receive a reset link.")}
           </p>
         </div>
 
-        {/* Role Toggle */}
-        <div className="flex bg-gray-100 p-1 rounded-xl mb-8 border border-gray-200/50">
-          <button
-            onClick={() => setRole("student")}
-            className={`flex-1 py-2 text-[11px] font-black rounded-lg transition-all tracking-widest ${
-              role === "student"
-                ? "bg-white text-black shadow-sm"
-                : "text-gray-400"
-            }`}
-          >
-            STUDENT
-          </button>
-          <button
-            onClick={() => setRole("teacher")}
-            className={`flex-1 py-2 text-[11px] font-black rounded-lg transition-all tracking-widest ${
-              role === "teacher"
-                ? "bg-white text-black shadow-sm"
-                : "text-gray-400"
-            }`}
-          >
-            TEACHER
-          </button>
-        </div>
+        {/* Role Toggle - Hidden during forgot mode */}
+        {mode !== "forgot" && (
+          <div className="flex bg-gray-100 p-1 rounded-md mb-8 border border-gray-200/50">
+            <button
+              onClick={() => setRole("student")}
+              className={`flex-1 py-2.5 text-[12px] font-bold rounded-md transition-all ${role === "student" ? "bg-white text-black" : "text-gray-400"}`}
+            >
+              STUDENT
+            </button>
+            <button
+              onClick={() => setRole("teacher")}
+              className={`flex-1 py-2.5 text-[12px] font-bold rounded-md transition-all ${role === "teacher" ? "bg-white text-black" : "text-gray-400"}`}
+            >
+              TEACHER
+            </button>
+          </div>
+        )}
 
-        {/* Form Container */}
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+        <form
+          className="space-y-5"
+          onSubmit={
+            mode === "forgot"
+              ? handleResetRequest
+              : (e) => {
+                  e.preventDefault();
+                  return mode === "login"
+                    ? LoginForm(name, password)
+                    : RegistrationForm(name, password);
+                }
+          }
+        >
+          {/* Registration Full Name */}
           {mode === "register" && (
-            <div className="relative border-b border-gray-200 pb-2 focus-within:border-black transition-colors">
-              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+            <div className="flex flex-col gap-1.5 text-left">
+              <label className="text-[14px] font-bold text-gray-900">
                 Full Name
               </label>
               <input
                 type="text"
-                placeholder="Johanness Leo"
-                className="w-full bg-transparent text-[15px] font-bold outline-none placeholder:text-gray-200"
+                placeholder="Enter Fullname"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-2 focus:ring-black transition-all"
               />
             </div>
           )}
 
-          <div className="relative border-b border-gray-200 pb-2 focus-within:border-black transition-colors">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
-              {role === "student" ? "Student ID" : "Employee ID"}
+          {/* Dynamic Input: ID or Verification Code */}
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-[14px] font-bold text-gray-900">
+              {mode === "forgot" && isCodeSent
+                ? "Verification Code"
+                : role === "student"
+                  ? "Student ID"
+                  : "Employee ID"}
             </label>
             <input
               type="text"
-              placeholder={role === "student" ? "2026-001" : "EMP-992"}
-              className="w-full bg-transparent text-[15px] font-bold outline-none placeholder:text-gray-200"
+              onChange={(e) =>
+                isCodeSent
+                  ? setVerificationCode(e.target.value)
+                  : setName(e.target.value)
+              }
+              placeholder={
+                isCodeSent
+                  ? "0 0 0 0 0 0"
+                  : role === "student"
+                    ? "Enter your ID"
+                    : "Enter employee ID"
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-2 focus:ring-black transition-all tracking-[0.2em] placeholder:tracking-normal"
+              maxLength={isCodeSent ? 6 : undefined}
             />
           </div>
 
-          <div className="relative border-b border-gray-200 pb-2 focus-within:border-black transition-colors">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="user@university.edu"
-              className="w-full bg-transparent text-[15px] font-bold outline-none placeholder:text-gray-200"
-            />
-          </div>
-
-          <div className="relative border-b border-gray-200 pb-2 focus-within:border-black transition-colors">
-            <div className="flex justify-between items-end">
-              <div className="flex-1">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
-                  Password
-                </label>
+          {/* Password Field */}
+          {mode !== "forgot" && (
+            <div className="flex flex-col gap-1.5 text-left">
+              <label className="text-[14px] font-bold text-gray-900">
+                Password
+              </label>
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="w-full bg-transparent text-[15px] font-bold outline-none"
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter correct password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-2 focus:ring-black transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
+                >
+                  {showPassword ? (
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
               </div>
-              {/* RAW SVG EYE ICON */}
+            </div>
+          )}
+
+          {/* Action Row */}
+          <div className="flex items-center justify-between">
+            {mode !== "forgot" ? (
+              <>
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
+                  />
+                  <span className="text-[14px] font-bold text-gray-700 group-hover:text-black">
+                    Remember me
+                  </span>
+                </label>
+                {mode === "login" && (
+                  <button
+                    type="button"
+                    onClick={() => setMode("forgot")}
+                    className="text-[14px] font-bold text-black hover:text-blue-500 transition-colors cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </>
+            ) : (
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-400 pb-1"
+                onClick={() => {
+                  setMode("login");
+                  setIsCodeSent(false);
+                }}
+                className="text-[14px] font-bold text-blue-500 hover:text-blue-400"
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
+                ← Back to Login
               </button>
-            </div>
+            )}
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-4 rounded-xl text-[13px] font-black uppercase tracking-[2px] active:scale-[0.98] transition-all mt-4 flex items-center justify-center gap-2"
+            className="w-full bg-[#111827] text-white py-4 rounded-xl text-[16px] font-bold active:scale-[0.98] transition-all mt-4 hover:bg-black shadow-lg shadow-black/5"
           >
-            <span>{mode === "login" ? "Login" : "Register"}</span>
-            {/* RAW SVG ARROW */}
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+            {mode === "login" && "Login"}
+            {mode === "register" && "Sign up"}
+            {mode === "forgot" &&
+              (isCodeSent ? "Verify Code" : "Send Reset Link")}
           </button>
         </form>
 
-        <div className="mt-16 text-center opacity-20">
-          <p className="text-[9px] font-black text-gray-900 uppercase tracking-[4px]">
-            Academic Pulse
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-[14px] text-gray-500 font-medium">
+            {mode === "login"
+              ? "Don't have an account?"
+              : "Already have an account?"}{" "}
+            <span
+              onClick={() => {
+                setMode(mode === "login" ? "register" : "login");
+                setIsCodeSent(false);
+              }}
+              className="font-extrabold text-blue-500 cursor-pointer hover:text-blue-400 transition-colors"
+            >
+              {mode === "login" ? "Register!" : "Login!"}
+            </span>
           </p>
         </div>
       </div>
