@@ -20,7 +20,6 @@ const ModalPortal = ({ children }: { children: React.ReactNode }) => {
 export function ImageModal({ openModal, modalStatus }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
-  console.log(modalStatus);
   useEffect(() => {
     if (modalStatus) {
       setShouldRender(true);

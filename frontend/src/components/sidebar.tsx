@@ -7,19 +7,22 @@ export const Sidebar = ({ activeTab, setActiveTab }: Tabs) => {
     <>
       <div className="p-6">
         <div className="flex items-center gap-3 mb-10">
-          <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center text-white font-bold">
-            V
+          <div className="group flex items-center cursor-pointer">
+            <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center text-white font-bold z-10">
+              V
+            </div>
+            <span className="max-w-0 overflow-hidden whitespace-nowrap font-bold text-lg tracking-tight transition-all duration-500 ease-in-out opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-3">
+              ASST
+            </span>
           </div>
-          <span className="font-bold text-lg tracking-tight">ASST</span>
         </div>
 
         <nav className="space-y-1">
           <SidebarItem
-            onClick={() => {
-              (setActiveTab("Dashboard"), console.log("hello world"));
-            }}
+            active={"Dashboard"}
+            setActiveTab={setActiveTab}
             label="Today's Update"
-            active
+            state={activeTab === "Dashboard"}
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -38,8 +41,10 @@ export const Sidebar = ({ activeTab, setActiveTab }: Tabs) => {
           />
 
           <SidebarItem
-            onClick={() => setActiveTab("Schedule")}
+            active={"Schedule"}
+            setActiveTab={setActiveTab}
             label="Schedule"
+            state={activeTab === "Schedule"}
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -58,8 +63,10 @@ export const Sidebar = ({ activeTab, setActiveTab }: Tabs) => {
           />
 
           <SidebarItem
-            onClick={() => setActiveTab("History")}
-            label="ScheduleStatusHistory"
+            active={"History"}
+            setActiveTab={setActiveTab}
+            label="Schedule Status History"
+            state={activeTab === "History"}
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -78,8 +85,10 @@ export const Sidebar = ({ activeTab, setActiveTab }: Tabs) => {
           />
 
           <SidebarItem
-            onClick={() => setActiveTab("About")}
+            active={"About"}
+            setActiveTab={setActiveTab}
             label="About"
+            state={activeTab === "About"}
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +108,7 @@ export const Sidebar = ({ activeTab, setActiveTab }: Tabs) => {
         </nav>
       </div>
 
-      <div className="mt-auto p-6 border-t border-gray-100">
+      <div className="mt-auto p-6 border-t border-gray-200">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-slate-100 rounded-sm border border-gray-200" />
           <div className="text-xs">
@@ -112,12 +121,15 @@ export const Sidebar = ({ activeTab, setActiveTab }: Tabs) => {
   );
 };
 
-const SidebarItem = ({ label, icon, active = false }: any) => (
+const SidebarItem = ({ label, icon, active, setActiveTab, state }: any) => (
   <div
-    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all ${
-      active
-        ? "bg-blue-50 text-blue-600 font-bold"
-        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+    onClick={() => {
+      (setActiveTab(active), console.log(active));
+    }}
+    className={`flex items-center gap-3 px-4 py-2.5 rounded-md cursor-pointer transition-all ${
+      state
+        ? "bg-gray-100 text-black font-bold"
+        : "text-slate-500 hover:text-black hover:bg-gray-100"
     }`}
   >
     <span className="text-sm">{icon}</span>

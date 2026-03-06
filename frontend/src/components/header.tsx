@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export const Header = () => {
   const [theme, setTheme] = useState("light");
-
+  const [isOpen, setIsOpen] = useState(false);
   // Function to toggle
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -17,17 +17,18 @@ export const Header = () => {
   };
   return (
     <>
-      <header className="h-16  border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-10">
+      <header className="h-16  border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2 text-sm text-slate-400">
           <span>Student Dashboard</span>
           <span className="text-slate-300">/</span>
           <span className="text-slate-900 font-semibold">Overview</span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
-            className="w-10 h-10 flex items-center justify-center rounded-md border border-gray-200 bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all group"
+            className={`w-9 h-9 flex items-center justify-center rounded-md border border-gray-200  text-slate-500 transition-all group cursor-pointer
+              ${theme === "light" ? "bg-white text-black" : "bg-black text-white"}`}
           >
             {theme === "light" ? (
               /* Moon Icon (Clicking this turns it DARK) */
@@ -86,6 +87,37 @@ export const Header = () => {
               </span>
             </span>
           </button>
+
+          <div className="relative inline-block">
+            {/* 3-DOTS BOX */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-9 h-9 flex items-center justify-center rounded-md border border-gray-200 bg-white text-slate-500 hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+            >
+              <span className="font-bold text-xl mb-2">...</span>
+            </button>
+
+            {/* DROPDOWN MENU */}
+            {isOpen && (
+              <>
+                {/* Backdrop to close when clicking outside */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsOpen(false)}
+                />
+
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-sm shadow-lg z-20 py-1 overflow-hidden">
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                    Settings
+                  </button>
+                  <div className="h-px bg-slate-100 my-1" />
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </header>
     </>

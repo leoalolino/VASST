@@ -1,0 +1,23 @@
+services:
+  # --- NODE.JS + TS BACKEND ---
+  # backend-api:
+  # image: node:22-alpine
+  # working_dir: /documents
+  # ports:
+  # - "8000:8000" # Express usually runs on 8000 or 3000
+  # volumes:
+  # - ./backend:/app
+  # - /app/node_modules # Don't let Mac node_modules overwrite container
+  # command: sh -c "npm install && npm run dev"
+
+  # --- REACT FRONTEND ---
+  frontend-ui:
+    image: node:22-alpine
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    # The --host flag is MANDATORY for Docker to talk to Safari
+    command: sh -c "npm install && npm run dev -- --host"
