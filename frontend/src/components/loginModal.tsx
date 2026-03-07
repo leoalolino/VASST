@@ -8,6 +8,7 @@ export const LoginModal: React.FC = () => {
   const [role, setRole] = useState<Role>("student");
   const [mode, setMode] = useState<Mode>("login");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -74,8 +75,8 @@ export const LoginModal: React.FC = () => {
               : (e) => {
                   e.preventDefault();
                   return mode === "login"
-                    ? LoginForm(name, password)
-                    : RegistrationForm(name, password);
+                    ? LoginForm(email, password)
+                    : RegistrationForm(name, email, password);
                 }
           }
         >
@@ -88,7 +89,9 @@ export const LoginModal: React.FC = () => {
               <input
                 type="text"
                 placeholder="Enter Fullname"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-2 focus:ring-black transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-1 focus:ring-black transition-all"
+                onChange={(e) => setName(e.target.value)}
+                required
               />
             </div>
           )}
@@ -99,25 +102,26 @@ export const LoginModal: React.FC = () => {
               {mode === "forgot" && isCodeSent
                 ? "Verification Code"
                 : role === "student"
-                  ? "Student ID"
-                  : "Employee ID"}
+                  ? "Email"
+                  : "Email"}
             </label>
             <input
               type="text"
               onChange={(e) =>
                 isCodeSent
                   ? setVerificationCode(e.target.value)
-                  : setName(e.target.value)
+                  : setEmail(e.target.value)
               }
               placeholder={
                 isCodeSent
                   ? "0 0 0 0 0 0"
                   : role === "student"
-                    ? "Enter your ID"
+                    ? "Enter student ID"
                     : "Enter employee ID"
               }
-              className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-2 focus:ring-black transition-all tracking-[0.2em] placeholder:tracking-normal"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-1 focus:ring-black transition-all  placeholder:tracking-normal"
               maxLength={isCodeSent ? 6 : undefined}
+              required
             />
           </div>
 
@@ -131,8 +135,9 @@ export const LoginModal: React.FC = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter correct password"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-2 focus:ring-black transition-all"
+                  placeholder="Enter Correct password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-[15px] font-medium outline-none focus:ring-1 focus:ring-black transition-all"
+                  required
                 />
                 <button
                   type="button"
