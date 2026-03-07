@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Sidebar } from "../components/sidebar";
-import { DailyStatus } from "./dailystatus";
+import { DailyStatus } from "./studentDashboard";
 import { StudentSchedule } from "./schedule";
 import { ScheduleHistory } from "./history";
 import { About } from "./about";
 import { Header } from "../components/header";
 
-export const DashboardLayout = () => {
+export const StudentDashboardLayout = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
 
   return (

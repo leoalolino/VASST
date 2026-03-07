@@ -4,6 +4,7 @@ export const RegistrationForm = async (
   name: any,
   email: any,
   password: any,
+  role: string,
 ) => {
   try {
     const mail = `${email}@gmail.com`;
@@ -14,6 +15,7 @@ export const RegistrationForm = async (
       options: {
         data: {
           display_name: name,
+          role: role,
         },
       },
     });
@@ -30,7 +32,7 @@ export const RegistrationForm = async (
       return { stats: "failed" };
     } else {
       sileo.success({
-        description: `successfully registered user ${data?.user?.user_metadata.display_name}`,
+        description: `successfully registered user ${data?.user?.user_metadata.display_name} with the role of ${data?.user?.user_metadata.role}`,
         title: "success",
       });
       return { stats: "success" };
@@ -48,7 +50,7 @@ export const RegistrationForm = async (
   }
 };
 
-export const LoginForm = async (name: any, password: any) => {
+export const LoginForm = async (name: any, password: any, role: any) => {
   if (!name && !password) {
     sileo.error({
       title: "failed",
@@ -61,8 +63,9 @@ export const LoginForm = async (name: any, password: any) => {
     return { stats: "failed" };
   }
   try {
+    const formattedName = `${name.trim().toLowerCase()}@gmail.com`;
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: name,
+      email: formattedName,
       password: password,
     });
 
@@ -78,7 +81,7 @@ export const LoginForm = async (name: any, password: any) => {
       return { stats: "failed" };
     } else {
       sileo.success({
-        description: "successfully login",
+        description: `successfully login with the role of ${data?.user?.user_metadata.role}`,
         title: "success",
       });
       return { stats: "success" };

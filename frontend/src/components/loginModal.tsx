@@ -75,8 +75,8 @@ export const LoginModal: React.FC = () => {
               : (e) => {
                   e.preventDefault();
                   return mode === "login"
-                    ? LoginForm(email, password)
-                    : RegistrationForm(name, email, password);
+                    ? LoginForm(email, password, role)
+                    : RegistrationForm(name, email, password, role);
                 }
           }
         >

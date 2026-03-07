@@ -1,7 +1,25 @@
 import { Toaster } from "sileo";
 import { LoginModal } from "./components/loginModal";
-import { DashboardLayout } from "./layout/student";
+import { StudentDashboardLayout } from "./layout/student";
+import { useState, useEffect } from "react";
+import { supabase } from "./supabaseClient.ts";
+import { InstructorDashboardLayout } from "./layout/teacherDashboard.tsx";
+
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [role, setRole] = useState("");
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setLoggedIn(!!session);
+      setLoading(false);
+      setRole(session?.user?.user_metadata?.role ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
   return (
     <>
       <Toaster
@@ -9,13 +27,13 @@ function App() {
         options={{
           fill: "#1a1a1a",
           styles: {
-            title: "text-white!",
-            description: "text-white! capitalize",
+            title: "text-green-500!",
+            description: "text-green-500! capitalize",
           },
         }}
       />
-      <LoginModal />
-      <DashboardLayout />
+      {loggedIn ? <StudentDashboardLayout /> : <LoginModal />}
+      <InstructorDashboardLayout />
     </>
   );
 }
