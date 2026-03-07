@@ -56,7 +56,7 @@ export const LoginForm = async (name: any, password: any, role: any) => {
       title: "failed",
       description: "input shouldn't be empty",
       styles: {
-        description: "text-red-500! capitalize",
+        description: "text-red-500! first-letter:uppercase",
         title: "text-red-500!",
       },
     });
@@ -71,27 +71,44 @@ export const LoginForm = async (name: any, password: any, role: any) => {
 
     if (error) {
       sileo.error({
-        description: "invalid username or password",
         title: "failed",
+        description: "invalid username or password",
         styles: {
-          description: "text-red-500! capitalize",
-          title: "text-red-500!",
+          description: "text-red-500! first-letter:uppercase",
+          title: "text-red-500! uppercase",
         },
       });
       return { stats: "failed" };
-    } else {
-      sileo.success({
-        description: `successfully login with the role of ${data?.user?.user_metadata.role}`,
-        title: "success",
-      });
-      return { stats: "success" };
     }
+
+    const userRole = data?.user?.user_metadata?.role;
+
+    if (userRole !== role) {
+      await supabase.auth.signOut();
+      sileo.error({
+        title: "failed",
+        description: `Invalid username or password`,
+        styles: {
+          title: "text-red-500!",
+          description: "text-red-500!",
+        },
+      });
+
+      return { stats: "failed" };
+    }
+
+    sileo.success({
+      title: "success",
+      description: `Successfully logged in as a ${userRole}`,
+    });
+
+    return { stats: "success" };
   } catch (e: any) {
     sileo.error({
       title: "failed",
       description: `error due to: ${e.message}`,
       styles: {
-        description: "text-red-500! capitalize",
+        description: "text-red-500! first-letter:capitalize",
         title: "text-red-500!",
       },
     });
