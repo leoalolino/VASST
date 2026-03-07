@@ -10,12 +10,14 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState("");
   const [name, setName] = useState(null);
+  const [isLoading, setLoading] = useState(false);
+
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setLoggedIn(!!session);
-      // setLoading(false);
+      setLoading(false);
       setRole(session?.user?.user_metadata?.role ?? null);
       setName(session?.user.user_metadata.display_name ?? null);
     });
@@ -24,9 +26,11 @@ function App() {
   }, []);
   return (
     <>
-      {/* {loading && <FullScreenLoader />} */}
+      {isLoading && <FullScreenLoader />}
       <Toaster
-        position="top-center"
+        position={
+          role === "student" || role === "teacher" ? "top-center" : "top-right"
+        }
         options={{
           fill: "#1a1a1a",
           styles: {
@@ -36,7 +40,10 @@ function App() {
         }}
       />
       {!loggedIn ? (
-        <LoginModal />
+        <LoginModal
+          setLoading={() => setLoading(true)}
+          isLoading={setLoading}
+        />
       ) : role === "student" ? (
         <StudentDashboardLayout />
       ) : role === "teacher" ? (

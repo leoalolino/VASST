@@ -3,8 +3,11 @@ import { LoginForm, RegistrationForm } from "../api/auth";
 
 type Role = "student" | "teacher";
 type Mode = "login" | "register" | "forgot";
-
-export const LoginModal: React.FC = () => {
+type Props = {
+  setLoading: () => void;
+  isLoading: (state: boolean) => void;
+};
+export const LoginModal = ({ setLoading, isLoading }: Props) => {
   const [role, setRole] = useState<Role>("student");
   const [mode, setMode] = useState<Mode>("login");
   const [name, setName] = useState("");
@@ -75,7 +78,7 @@ export const LoginModal: React.FC = () => {
               : (e) => {
                   e.preventDefault();
                   return mode === "login"
-                    ? LoginForm(email, password, role)
+                    ? LoginForm(email, password, role, setLoading, isLoading)
                     : RegistrationForm(name, email, password, role);
                 }
           }

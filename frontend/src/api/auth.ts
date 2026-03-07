@@ -50,7 +50,13 @@ export const RegistrationForm = async (
   }
 };
 
-export const LoginForm = async (name: any, password: any, role: any) => {
+export const LoginForm = async (
+  name: any,
+  password: any,
+  role: any,
+  setLoading: any,
+  isLoading: any,
+) => {
   if (!name && !password) {
     sileo.error({
       title: "failed",
@@ -68,6 +74,12 @@ export const LoginForm = async (name: any, password: any, role: any) => {
       email: formattedName,
       password: password,
     });
+    setLoading();
+    setTimeout(() => {
+      isLoading(false);
+    }, 2000);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (error) {
       sileo.error({
@@ -80,11 +92,11 @@ export const LoginForm = async (name: any, password: any, role: any) => {
       });
       return { stats: "failed" };
     }
-
     const userRole = data?.user?.user_metadata?.role;
 
     if (userRole !== role) {
       await supabase.auth.signOut();
+      isLoading(false);
       sileo.error({
         title: "failed",
         description: `Invalid username or password`,
@@ -96,7 +108,8 @@ export const LoginForm = async (name: any, password: any, role: any) => {
 
       return { stats: "failed" };
     }
-
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    isLoading(false);
     sileo.success({
       title: "success",
       description: `Successfully logged in as a ${userRole}`,
